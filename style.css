@@ -1,0 +1,19 @@
+:root {
+    --game-background: rgb(24, 25, 33);
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background-color: var(--game-background);
+}
+
+
+#cnvs {
+    position: absolute;
+    top: 50%;
+    width: 700px;
+    height: 400px;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}

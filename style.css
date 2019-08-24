@@ -1,5 +1,7 @@
 :root {
     --game-background: rgb(24, 25, 33);
+    --canvas-background: rgb(33, 34, 45);
+    --canvas-border: #635c5c;
 }
 
 body {
@@ -12,8 +14,13 @@ body {
 #cnvs {
     position: absolute;
     top: 50%;
-    width: 700px;
-    height: 400px;
+    width: 100%;
+    max-width: 800px;
+    height: auto;
     left: 50%;
     transform: translate(-50%, -50%);
+    background-color: var(--canvas-background);
+    border: 2px solid var(--canvas-border);
+    box-sizing: border-box;
 }
+

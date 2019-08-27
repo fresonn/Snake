@@ -15,8 +15,8 @@ body {
     position: absolute;
     top: 50%;
     width: 100%;
-    max-width: 800px;
-    height: auto;
+    max-width: 560px;
+    /* height: auto; */
     left: 50%;
     transform: translate(-50%, -50%);
     background-color: var(--canvas-background);

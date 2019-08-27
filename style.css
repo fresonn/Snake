@@ -7,7 +7,10 @@
 body {
     margin: 0;
     padding: 0;
-    background-color: var(--game-background);
+    /* background-color: var(--game-background); */
+    background-image: url("./assets/background.jpg");
+    background-repeat: no-repeat;
+    /* background-size: cover; */
 }
 
 

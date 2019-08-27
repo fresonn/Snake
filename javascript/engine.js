@@ -42,6 +42,7 @@ class Game {
             body: null,
             cell: null,
             coin: null,
+            head: null
         }
         this.removeKeyHandler = this.keyHandler.bind(this)
     }
@@ -183,8 +184,6 @@ class Game {
                 this.ctx.drawImage(this.sprites.coin, cell.x, cell.y)
             }
         }
-
-        
     }
 
 
@@ -218,10 +217,27 @@ class Game {
         }
     }
 
-    renderSnake() {
+    rednerHead() {
+        const head = this.snake.cells[0]
+
+        this.ctx.drawImage(this.sprites.head, head.x, head.y)
+    }
+
+    renderBody() {
+        let count = 0
         for (let cell of this.snake.cells) {
-            this.ctx.drawImage(this.sprites.body, cell.x, cell.y)
+            if (count > 0) {
+                this.ctx.drawImage(this.sprites.body, cell.x, cell.y)
+            }
+            count++
         }
+        
+    }
+
+
+    renderSnake() {
+        this.rednerHead()
+        this.renderBody()
     }
 
     getNextCell() {
@@ -241,8 +257,6 @@ class Game {
 
         if (!this.snake.isMoving) return // ну тут ясно
 
-        console.log('move')
-
         const nextCell = this.getNextCell() // bool
 
         if (nextCell) {
@@ -256,10 +270,16 @@ class Game {
                 this.buildCoin()
             }
         } else {
-            console.log('stop')
-            clearInterval(this.timer)
-            window.removeEventListener('keydown', this.removeKeyHandler)
+            this.stopGame()
         }
+    }
+
+
+    stopGame() {
+        console.log('stop')
+        clearInterval(this.timer)
+        window.removeEventListener('keydown', this.removeKeyHandler)
+        this.canvas.style.border = "2px solid red"
     }
 
 
@@ -288,7 +308,20 @@ class Game {
         this.coin = cell
     }
 
+
+    newSpeed(val) {
+        this.snake.speed = val
+
+        clearInterval(this.timer)
+
+        this.timer = setInterval(() => {
+            this.move()
+            this.launch()
+        }, this.snake.speed);
+    }
+
 }
 
 const game = new Game
 game.start()
+

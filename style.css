@@ -2,6 +2,16 @@
     --game-background: rgb(24, 25, 33);
     --canvas-background: rgb(33, 34, 45);
     --canvas-border: #635c5c;
+    --text-color: #5CDB95;
+}
+
+ul {
+    list-style: none;
+}
+
+@keyframes for-title {
+    from { color: #fff; }
+    to { color: rgb(116, 112, 112); }
 }
 
 body {
@@ -11,6 +21,17 @@ body {
     background-image: url("./assets/background.jpg");
     background-repeat: no-repeat;
     /* background-size: cover; */
+}
+
+.title {
+    text-align: center;
+    margin-top: 40px;
+    color: #fff;
+    animation: for-title .8s infinite ease-in-out;
+}
+
+.title.hide {
+    opacity: 0;
 }
 
 
@@ -27,3 +48,61 @@ body {
     box-sizing: border-box;
 }
 
+.box {
+    position: absolute;
+    background: #635c5c;
+    width: 250px;
+    right: 50px;
+    bottom: 20px;
+    opacity: .5;
+    transition: all .3s ease-in-out;
+}
+
+.box:hover {
+    opacity: 1;
+}
+
+.speed {
+    text-align: center;
+    margin: 0;
+    padding: 5px 0;
+    /* padding-bottom: 2px; */
+    color: var(--text-color);
+    font-weight: 700;
+}
+/* Победить bottstrap *button */
+.box .mybtn { 
+    width: 100%;
+    font-weight: 700;
+    font-size: 20px;
+    border: none;
+    outline: none;
+    color: var(--text-color);
+    background: var(--canvas-background);
+    transition: all .3s ease-in-out;
+}
+
+.mybtn:hover {
+    background: rgb(44, 46, 61);
+}
+
+.mybtn:active {
+    background: rgb(20, 21, 27);
+}
+
+.start-btn {
+    padding: 5px 0;
+    color: var(--text-color);
+    background: #28a745;
+    width: 100%;
+    font-weight: 700;
+    font-size: 20px;
+    border: none;
+    outline: none;
+}
+
+.start-btn:disabled {
+    background: var(--canvas-border);
+    color: #ddc1c1;
+    cursor: not-allowed;
+}

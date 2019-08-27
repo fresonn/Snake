@@ -12,13 +12,18 @@ class Game {
         this.coin = null
         this.game = {
             cells: [],
-            cellSize: 20
+            cellSize: 20,
+            isStarted: false
         }
         this.snake = {
             cells: [],
             speed: 100, // в ms
             isMoving: false,
             currentRoute: null,
+            startCoords: [
+                { row: 20, col: 20 }, // голова змеи
+                { row: 21, col: 20 },
+            ],
             routes: {
                 left: {
                     row: 0,
@@ -53,6 +58,7 @@ class Game {
         this.buildGrid()
         this.buildSnake()
         this.buildCoin()
+        this.action()
 
         this.assetsPreload(() => {
             this.launch()
@@ -63,9 +69,9 @@ class Game {
 
 
     start() {
-    
-        this.build()
-        this.action()
+        const infoTitle = document.querySelector(".title")
+        infoTitle.classList.add("hide")
+        // this.action()
         this.snake.isMoving = true
 
         this.timer = setInterval(() => {
@@ -81,6 +87,12 @@ class Game {
         Но это только в Chrome(
     */
     keyHandler(event) {
+
+        if (!this.game.isStarted && event.keyCode === 32) {
+            this.start()
+            this.game.isStarted = true
+        }
+
         const {
             up,
             down,
@@ -196,14 +208,7 @@ class Game {
 
     buildSnake() {
 
-        let startSnake = [
-            { row: 20, col: 20 }, // голова змеи
-            { row: 21, col: 20 },
-            { row: 22, col: 20 },
-            { row: 23, col: 20 },
-        ]
-
-        for (let snakeCell of startSnake) {
+        for (let snakeCell of this.snake.startCoords) {
 
             // Просто заменю ячейки, которые совпадают со змеей на ее картинки
             let target = this.game.cells.find((cell) => {
@@ -223,6 +228,7 @@ class Game {
         this.ctx.drawImage(this.sprites.head, head.x, head.y)
     }
 
+
     renderBody() {
         let count = 0
         for (let cell of this.snake.cells) {
@@ -240,6 +246,7 @@ class Game {
         this.renderBody()
     }
 
+
     getNextCell() {
         const head = this.snake.cells[0]
 
@@ -253,6 +260,7 @@ class Game {
         return this.game.cells.find(cell => cell.row === snakeRow && cell.col === snakeCol)
     }
     
+
     move() {
 
         if (!this.snake.isMoving) return // ну тут ясно
@@ -275,11 +283,26 @@ class Game {
     }
 
 
-    stopGame() {
-        console.log('stop')
+    stopGame(repeat = true) {
+        this.snake.isMoving = false
         clearInterval(this.timer)
         window.removeEventListener('keydown', this.removeKeyHandler)
-        this.canvas.style.border = "2px solid red"
+        
+        this.canvas.style.border = "2px solid #dc3545"
+
+        // if (repeat) {
+        //     setTimeout(() => {
+        //         this.restartGame()
+        //     }, 1000)
+        // }
+    }
+
+    restartGame() {
+        this.snake.isMoving = true
+        this.canvas.style.border = "2px solid #635c5c"
+        const cells = [...this.snake.startCoords]
+        this.snake.cells = cells
+        this.start()
     }
 
 
@@ -299,17 +322,15 @@ class Game {
             return m + Math.floor((n - m + 1) * Math.random())
         }
 
-
         const availableCells = this.game.cells.filter(findCell => !this.isSnakeCells(findCell))
-
-
         const cell = this.game.cells[getRandomCell(20, availableCells.length - 1)]
+
         cell.food = true
         this.coin = cell
     }
 
 
-    newSpeed(val) {
+    newSpeed(val = this.snake.speed) {
         this.snake.speed = val
 
         clearInterval(this.timer)
@@ -323,5 +344,11 @@ class Game {
 }
 
 const game = new Game
-game.start()
 
+const loadHandler = event => {
+    game.build()
+    console.log(true)
+}
+
+
+window.addEventListener('load', loadHandler)

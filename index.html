@@ -4,10 +4,32 @@
     <meta charset="UTF-8">
     <link rel="shortcut icon" href="./assets/favicon.png" type="image/x-icon">
     <link rel="stylesheet" href="./style.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
     <title>SnakeJS</title>
 </head>
 <body>
+    <h1 class="title">Нажмите ПРОБЕЛ, чтобы начать</h1>
     <canvas id="cnvs" width="800px" height="800px"></canvas>
+
+    <div class="box">
+        <ul class="row m-0 p-0">
+            <li class="col-12">
+                <p class="speed">
+                    Скорость
+                </p>
+            </li>
+            <li class="col-6 p-0">
+                <button class="mybtn">-</button>
+            </li>
+            <li class="col-6 p-0">
+                <button class="mybtn">+</button>
+            </li>
+            
+        </ul>
+    </div>
+
     <script src="./javascript/engine.js"></script>
+    <script src="./javascript/controls.js"></script>
 </body>
 </html>

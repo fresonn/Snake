@@ -5,9 +5,7 @@
     --text-color: #5CDB95;
 }
 
-ul {
-    list-style: none;
-}
+
 
 @keyframes for-title {
     from { color: #fff; }
@@ -21,6 +19,12 @@ body {
     background-image: url("./assets/background.jpg");
     background-repeat: no-repeat;
     /* background-size: cover; */
+}
+
+.list-control {
+    margin: 0;
+    padding: 0;
+    list-style: none;
 }
 
 .title {
@@ -80,6 +84,12 @@ body {
     color: var(--text-color);
     background: var(--canvas-background);
     transition: all .3s ease-in-out;
+    padding: 5px;
+    cursor: pointer;
+}
+
+.controls {
+    display: flex;
 }
 
 .mybtn:hover {

@@ -10,10 +10,13 @@ class Game {
         this.canvas = document.querySelector("#cnvs")
         this.ctx = this.canvas.getContext("2d")
         this.coin = null
+        this.bomb = null
         this.game = {
             cells: [],
             cellSize: 20,
-            isStarted: false
+            isStarted: false,
+            isLosing: false,
+            record: 0
         }
         this.snake = {
             cells: [],
@@ -47,6 +50,7 @@ class Game {
             body: null,
             cell: null,
             coin: null,
+            bomb: null,
             head: null
         }
         this.removeKeyHandler = this.keyHandler.bind(this)
@@ -58,6 +62,7 @@ class Game {
         this.buildGrid()
         this.buildSnake()
         this.buildCoin()
+        this.buildBomb()
         this.action()
 
         this.assetsPreload(() => {
@@ -69,9 +74,9 @@ class Game {
 
 
     start() {
+        this.game.isStarted = true
         const infoTitle = document.querySelector(".title")
         infoTitle.classList.add("hide")
-        // this.action()
         this.snake.isMoving = true
 
         this.timer = setInterval(() => {
@@ -88,9 +93,17 @@ class Game {
     */
     keyHandler(event) {
 
+        // 2 раза не выйдет
         if (!this.game.isStarted && event.keyCode === 32) {
             this.start()
+            if (this.game.isLosing) {
+                this.buildSnake() // опять строим от страртовых точек
+            }
             this.game.isStarted = true
+        }
+
+        if (!this.game.isStarted && this.game.isLosing && event.keyCode === 82) {
+            this.restartGame()
         }
 
         const {
@@ -176,7 +189,7 @@ class Game {
 
 
     buildGrid() {
-
+        // На основе размеров канваса строим абстрактную сетку
         for (let row = 0; row < this.canvas.width / this.game.cellSize; row++) { 
             for (let col = 0; col < this.canvas.height / this.game.cellSize; col++) {
 
@@ -194,6 +207,8 @@ class Game {
 
             if (cell.food) {
                 this.ctx.drawImage(this.sprites.coin, cell.x, cell.y)
+            } else if (cell.bomb) {
+                this.ctx.drawImage(this.sprites.bomb, cell.x, cell.y)
             }
         }
     }
@@ -218,13 +233,11 @@ class Game {
 
             this.snake.cells.push(target)
 
-
         }
     }
 
     rednerHead() {
         const head = this.snake.cells[0]
-
         this.ctx.drawImage(this.sprites.head, head.x, head.y)
     }
 
@@ -266,16 +279,22 @@ class Game {
         if (!this.snake.isMoving) return // ну тут ясно
 
         const nextCell = this.getNextCell() // bool
-
+        // может тут уместен switch?
         if (nextCell) {
             // +1 в начало
             this.snake.cells.unshift(nextCell) // каждая новая ячейка - голова
+            if (this.isBomb(nextCell)) {
+                this.stopGame()
+            }
+
             if (!this.isCoin(nextCell)) {
                 // -1 в конце
                 this.snake.cells.pop()
             } else {
                 this.coin.food = false
+                this.game.record++
                 this.buildCoin()
+                this.buildBomb()
             }
         } else {
             this.stopGame()
@@ -285,23 +304,34 @@ class Game {
 
     stopGame(repeat = true) {
         this.snake.isMoving = false
+        this.game.isStarted = false
+        this.game.isLosing = true
         clearInterval(this.timer)
-        window.removeEventListener('keydown', this.removeKeyHandler)
-        
+        // window.removeEventListener('keydown', this.removeKeyHandler)
         this.canvas.style.border = "2px solid #dc3545"
+        const infoTitle = document.querySelector(".title")
+        infoTitle.classList.remove("hide")
+        infoTitle.textContent = `Нажмите \"R\" чтобы повторить! Ваш рекорд: ${this.game.record}`
 
-        // if (repeat) {
-        //     setTimeout(() => {
-        //         this.restartGame()
-        //     }, 1000)
-        // }
+    }
+
+    clearAllBombs() {
+        for (let gameCell of this.game.cells) {
+            // Просто заменю ячейки, которые совпадают со змеей на ее картинки
+            if (gameCell.bomb) {
+                gameCell.bomb = false
+            }
+        }
     }
 
     restartGame() {
-        this.snake.isMoving = true
+        console.log('restart')
+        this.game.record = 0
+        this.clearAllBombs()
+        this.snake.cells = []
+        this.buildSnake()
+        this.buildBomb()
         this.canvas.style.border = "2px solid #635c5c"
-        const cells = [...this.snake.startCoords]
-        this.snake.cells = cells
         this.start()
     }
 
@@ -312,43 +342,39 @@ class Game {
         })
     }
 
+    
+    
+    getRandomCell(m, n) {
+        return m + Math.floor((n - m + 1) * Math.random())
+    }
+
+    // золотая монетка на поле
+    buildCoin() {
+       
+        const availableCells = this.game.cells.filter(findCell => !this.isSnakeCells(findCell))
+        const randomCell = this.game.cells[this.getRandomCell(20, availableCells.length - 1)]
+
+        randomCell.food = true
+        this.coin = randomCell
+    }
+
     isCoin(findCell) {
         return findCell.food
     }
 
-    // 
-    buildCoin() {
-        const getRandomCell = (m, n) => {
-            return m + Math.floor((n - m + 1) * Math.random())
-        }
-
+    // бомба на поле
+    buildBomb() {
         const availableCells = this.game.cells.filter(findCell => !this.isSnakeCells(findCell))
-        const cell = this.game.cells[getRandomCell(20, availableCells.length - 1)]
+        const cell = this.game.cells[this.getRandomCell(20, availableCells.length - 1)]
 
-        cell.food = true
-        this.coin = cell
+        cell.bomb = true
+        this.bomb = cell
     }
 
-
-    newSpeed(val = this.snake.speed) {
-        this.snake.speed = val
-
-        clearInterval(this.timer)
-
-        this.timer = setInterval(() => {
-            this.move()
-            this.launch()
-        }, this.snake.speed);
+    isBomb(findCell) {
+        return findCell.bomb
     }
 
 }
 
 const game = new Game
-
-const loadHandler = event => {
-    game.build()
-    console.log(true)
-}
-
-
-window.addEventListener('load', loadHandler)

@@ -1,6 +1,6 @@
 const loadHandler = event => {
     game.build()
-    console.log('all load')
+    console.log("%cAll resources loaded!", "color: limegreen;")
 }
 
-window.addEventListener('load', loadHandler)
+window.addEventListener("load", loadHandler)

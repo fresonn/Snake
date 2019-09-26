@@ -54,3 +54,17 @@ body {
 	border: 2px solid var(--canvas-border);
 	box-sizing: border-box;
 }
+
+footer {
+	background-color: var(--game-background);
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	right: 0;
+}
+
+footer h2 {
+	margin: 10px 0;
+	text-align: center;
+	color: var(--text-color);
+}

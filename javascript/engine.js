@@ -9,6 +9,7 @@ class Game {
     constructor() {
         this.canvas = document.querySelector("#cnvs")
         this.ctx = this.canvas.getContext("2d")
+        this.counter = document.querySelector(".count-record")
         this.coin = null
         this.bomb = null
         this.game = {
@@ -16,7 +17,8 @@ class Game {
             cellSize: 20,
             isStarted: false,
             isLosing: false,
-            record: 0
+            record: 0,
+            current: 0
         }
         this.snake = {
             cells: [],
@@ -57,7 +59,6 @@ class Game {
     }
 
 
-
     build() {
         this.buildGrid()
         this.buildSnake()
@@ -70,7 +71,6 @@ class Game {
         })
         this.snake.currentRoute = this.snake.routes.up
     }
-
 
 
     start() {
@@ -94,14 +94,11 @@ class Game {
     keyHandler(event) {
 
         // 2 раза не выйдет
-        if (!this.game.isStarted && event.keyCode === 32) {
+        if (!this.game.isStarted && !this.game.isLosing && event.keyCode === 32) { // Space
             this.start()
-            if (this.game.isLosing) {
-                this.buildSnake() // опять строим от страртовых точек
-            }
             this.game.isStarted = true
         }
-
+        // R
         if (!this.game.isStarted && this.game.isLosing && event.keyCode === 82) {
             this.restartGame()
         }
@@ -132,11 +129,9 @@ class Game {
     }
 
 
-
     action() {
         window.addEventListener("keydown", this.removeKeyHandler)
     }
-
 
 
     launch() {
@@ -149,7 +144,6 @@ class Game {
 
 
     }
-
 
 
     assetsPreload(funcAfterAll) {
@@ -175,7 +169,6 @@ class Game {
     }
 
 
-
     createCell(row, col) {
         const cellObj = {
             x: this.game.cellSize * col,
@@ -187,7 +180,6 @@ class Game {
     }
 
 
-
     buildGrid() {
         // На основе размеров канваса строим абстрактную сетку
         for (let row = 0; row < this.canvas.width / this.game.cellSize; row++) { 
@@ -197,7 +189,6 @@ class Game {
             }
         }
     }
-
 
 
     renderGrid() {
@@ -214,11 +205,9 @@ class Game {
     }
 
 
-
     getGridCell(row, col) {
         return this.game.cells.find(cell => cell.row === row && cell.col === col);
     }
-
 
 
     buildSnake() {
@@ -292,7 +281,7 @@ class Game {
                 this.snake.cells.pop()
             } else {
                 this.coin.food = false
-                this.game.record++
+                this.showResultOneline()
                 this.buildCoin()
                 this.buildBomb()
             }
@@ -302,18 +291,25 @@ class Game {
     }
 
 
+    showResultOneline() {
+        this.game.current++
+        this.counter.textContent = this.game.current
+    }
+
+
     stopGame(repeat = true) {
         this.snake.isMoving = false
         this.game.isStarted = false
         this.game.isLosing = true
+        this.game.record = this.game.current
+        this.game.current = 0
         clearInterval(this.timer)
-        // window.removeEventListener('keydown', this.removeKeyHandler)
         this.canvas.style.border = "2px solid #dc3545"
         const infoTitle = document.querySelector(".title")
         infoTitle.classList.remove("hide")
-        infoTitle.textContent = `Нажмите \"R\" чтобы повторить! Ваш рекорд: ${this.game.record}`
-
+        infoTitle.textContent = "Нажмите \"R\" чтобы повторить!"
     }
+
 
     clearAllBombs() {
         for (let gameCell of this.game.cells) {
@@ -324,15 +320,16 @@ class Game {
         }
     }
 
+    
     restartGame() {
-        console.log('restart')
-        this.game.record = 0
         this.clearAllBombs()
         this.snake.cells = []
         this.buildSnake()
         this.buildBomb()
         this.canvas.style.border = "2px solid #635c5c"
         this.start()
+        this.game.current = 0
+        this.counter.textContent = 0
     }
 
 
@@ -342,7 +339,6 @@ class Game {
         })
     }
 
-    
     
     getRandomCell(m, n) {
         return m + Math.floor((n - m + 1) * Math.random())
@@ -358,6 +354,7 @@ class Game {
         this.coin = randomCell
     }
 
+
     isCoin(findCell) {
         return findCell.food
     }
@@ -370,6 +367,7 @@ class Game {
         cell.bomb = true
         this.bomb = cell
     }
+
 
     isBomb(findCell) {
         return findCell.bomb

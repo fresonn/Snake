@@ -35,6 +35,7 @@ body {
 }
 
 .title .game-btn {
+	text-transform: uppercase;
 	animation: for-title 0.9s infinite;
 }
 

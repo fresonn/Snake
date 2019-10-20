@@ -307,7 +307,7 @@ class Game {
         this.canvas.style.border = "2px solid #dc3545"
         const infoTitle = document.querySelector(".title")
         infoTitle.classList.remove("hide")
-        infoTitle.textContent = "Нажмите \"R\" чтобы повторить!"
+        infoTitle.textContent = "Press \"R\" to retry"
     }
 
 

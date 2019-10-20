@@ -1,2 +1,2 @@
-# Змейка на JavaScript
+# Snake on JavaScript
 ![](img/prw.png)
